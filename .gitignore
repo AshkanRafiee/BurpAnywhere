@@ -1,0 +1,31 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Downloaded Burp Suite JAR
+burpsuite*.jar
+
+# Docker volumes
+burp_data/
+burp_prefs/
+
+# Burp Suite data and cache
+.Burp/
+.java/
+.cache/
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.iml

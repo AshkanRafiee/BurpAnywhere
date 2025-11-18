@@ -1,0 +1,56 @@
+services:
+  burpsuite:
+    build:
+      context: ./burp-app
+      dockerfile: Dockerfile
+      args:
+        BURPSUITE_VERSION: ${BURPSUITE_VERSION}
+        BURPSUITE_TYPE: ${BURPSUITE_TYPE}
+        BURPSUITE_MODE: ${BURPSUITE_MODE}
+        JAVA_OPTS: ${JAVA_OPTS}
+    env_file:
+      - .env
+    ports:
+      - "${BURP_PROXY_PORT}:${BURP_PROXY_PORT}"
+      # - "${NOVNC_PORT:-6080}:${NOVNC_PORT:-6080}"
+      # - "${VNC_PORT:-5901}:${VNC_PORT:-5901}"
+    volumes:
+      - ./burp-app/config:/home/burp/config
+      - burp_data:/home/burp/.Burp
+      - burp_prefs:/home/burp/.java/.userPrefs
+    environment:
+      DISPLAY: ${DISPLAY}
+      JAVA_OPTS: ${JAVA_OPTS}
+      BURPSUITE_MODE: ${BURPSUITE_MODE}
+      BURPSUITE_TYPE: ${BURPSUITE_TYPE}
+      BURPSUITE_VERSION: ${BURPSUITE_VERSION}
+      ENABLE_WEB_UI: ${ENABLE_WEB_UI}
+      VNC_DISPLAY: ${VNC_DISPLAY}
+      VNC_PORT: ${VNC_PORT}
+      NOVNC_PORT: ${NOVNC_PORT}
+      NOVNC_WEB_DIR: ${NOVNC_WEB_DIR}
+      XVFB_GEOMETRY: ${XVFB_GEOMETRY}
+      VNC_PASSWORD: ${VNC_PASSWORD}
+    restart: unless-stopped
+    container_name: burpsuite
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - nginx_certs:/etc/nginx/certs
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - burpsuite
+    restart: unless-stopped
+    command: ["/bin/sh", "-c", "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/certs/server.key -out /etc/nginx/certs/server.crt -subj '/CN=localhost' && nginx -g 'daemon off;'"]
+
+volumes:
+  burp_data:
+    driver: local
+  burp_prefs:
+    driver: local
+  nginx_certs:
+    driver: local
