@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${BURP_PROXY_PORT}:${BURP_PROXY_PORT}"
+      - "127.0.0.1:${BURP_PROXY_PORT}:${BURP_PROXY_PORT}"
       # - "${NOVNC_PORT:-6080}:${NOVNC_PORT:-6080}"
       # - "${VNC_PORT:-5901}:${VNC_PORT:-5901}"
     volumes:
